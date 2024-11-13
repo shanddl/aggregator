@@ -1,26 +1,61 @@
 name: Checkin
+# 工作流名称为 "Checkin"
+
 on:
   schedule:
-    - cron: "45 02 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
+# 工作流的触发器包括：
+# 1. 定时任务，每小时的第0分钟运行一次。
+# 2. 手动触发工作流。
 
 jobs:
   sync_with_upstream:
     runs-on: ubuntu-latest
     name: auto checkin for traffic
+    # 定义一个名为 "sync_with_upstream" 的任务，运行在最新的 Ubuntu 系统上。
+    # 任务名称为 "auto checkin for traffic"
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
         with:
           ref: master
+        # 第一步：使用 actions/checkout@v2 检出代码。
 
-      - name: Checkin
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
           architecture: "x64"
-      - run: python ./.github/actions/checkin/universal.py
+        # 第二步：使用 actions/setup-python@v5 设置 Python 环境，指定版本为 3.x，架构为 x64。
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+        # 第三步：缓存 Python 依赖，以减少每次运行时的安装时间。
+
+      - name: Install dependencies
+        run: pip install -r .github/actions/checkin/requirements.txt
+        # 第四步：安装 Python 依赖，假设你有一个 requirements.txt 文件列出所有依赖。
+
+      - name: Log Start
+        run: echo "Starting the check-in process"
+        # 第五步：日志输出，记录开始时间。
+
+      - name: Run Checkin Script
+        run: python .github/actions/checkin/universal.py
+        continue-on-error: true
+        # 第六步：运行 universal.py 脚本，路径为 .github/actions/checkin，并在错误时继续执行。
+
+      - name: Log End
+        run: echo "Check-in process completed"
+        # 第七步：日志输出，记录结束时间。
 
       - name: Timestamp
         run: date
+        # 第八步：打印当前时间戳到控制台。
