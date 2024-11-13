@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: master
+          ref: main
         # 第一步：使用 actions/checkout@v2 检出代码。
 
       - name: Set up Python
