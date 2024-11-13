@@ -13,13 +13,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: https://github.com/wzdnzd/aggregator
           ref: main
+        # 检出 fork 仓库的代码
 
-      - name: Merge upstream changes
+      - name: Add Upstream Remote
         run: |
           git remote add upstream https://github.com/wzdnzd/aggregator.git
-          git fetch upstream
+          # 添加上游仓库作为 remote
+
+      - name: Fetch Upstream
+        run: git fetch upstream
+        # 从上游仓库拉取最新代码
+
+      - name: Merge Upstream Changes
+        run: |
           git checkout main
           git merge upstream/main
-          git push origin main
+          # 合并上游仓库的更改到主分支
+
+      - name: Push Changes
+        run: git push origin main
+        # 推送合并后的更改到 fork 仓库的主分支
