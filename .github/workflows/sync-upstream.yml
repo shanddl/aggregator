@@ -16,6 +16,12 @@ jobs:
           ref: main
         # 检出 fork 仓库的代码
 
+      - name: Set Git Identity
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+        # 配置 Git 提交者的身份信息
+
       - name: Add Upstream Remote
         run: git remote add upstream https://github.com/wzdnzd/aggregator.git
         # 添加上游仓库作为 remote
