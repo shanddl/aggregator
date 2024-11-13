@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: 上游仓库所有者/上游仓库名称
+          repository: https://github.com/wzdnzd/aggregator
           ref: main
 
       - name: Merge upstream changes
