@@ -1,71 +1,62 @@
-name: Refresh
+name: Refresh  # 工作流名称
+
 on:
-  # performed every two hours
   schedule:
-    - cron: "0 */2 * * *"
-  workflow_dispatch:
+    - cron: "0 */2 * * *"  # 每两小时运行一次
+  workflow_dispatch:  # 允许手动触发工作流
 
 concurrency:
-  group: ${{ github.repository }}
-  cancel-in-progress: true
+  group: ${{ github.repository }}  # 设置并发组，确保同一时间只有一个工作流在运行
+  cancel-in-progress: true  # 如果有新的工作流开始，取消正在进行的旧工作流
 
 env:
-  # time zone
-  TZ: Asia/Shanghai
+  TZ: Asia/Shanghai  # 设置时区为上海时间
 
-  # github access token
-  GIST_PAT: ${{ secrets.GIST_PAT }}
-
-  # github username and gist id, separated by '/'
-  GIST_LINK: ${{ secrets.GIST_LINK }}
-
-  # the url to the list of airports that you maintain yourself
-  # each line include domain, coupon and invitation code, the domain must be included, and the latter two items are optional
-  CUSTOMIZE_LINK: ${{ secrets.CUSTOMIZE_LINK }}
-
-  # include special protocols, such as vless hysteria2 and hysteria
-  ENABLE_SPECIAL_PROTOCOLS: ${{ vars.ENABLE_SPECIAL_PROTOCOLS }}
+  GIST_PAT: ${{ secrets.GIST_PAT }}  # GitHub 访问令牌，用于访问和更新 Gist
+  GIST_LINK: ${{ secrets.GIST_LINK }}  # Gist 的链接，格式为 "用户名/Gist ID"
+  CUSTOMIZE_LINK: ${{ secrets.CUSTOMIZE_LINK }}  # 自定义机场列表的 URL，每行包含域名、优惠券和邀请码
+  ENABLE_SPECIAL_PROTOCOLS: ${{ vars.ENABLE_SPECIAL_PROTOCOLS }}  # 是否启用特殊协议，例如 vless hysteria2 和 hysteria
 
 jobs:
   process:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 运行环境为最新的 Ubuntu 系统
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout  # 检出代码
+        uses: actions/checkout@v4  # 使用 actions/checkout@v4
         with:
-          ref: main
+          ref: main  # 检出 main 分支
 
-      - name: Prepare
-        uses: actions/setup-python@v5
+      - name: Prepare  # 准备 Python 环境
+        uses: actions/setup-python@v5  # 使用 actions/setup-python@v5
         with:
-          python-version: "3.x"
-          architecture: "x64"
-          cache: "pip"
+          python-version: "3.x"  # 设置 Python 版本为 3.x
+          architecture: "x64"  # 设置架构为 x64
+          cache: "pip"  # 缓存 pip 依赖
 
-      - name: Install
-        run: pip3 install -r requirements.txt
+      - name: Install  # 安装依赖
+        run: pip3 install -r requirements.txt  # 通过 pip3 安装 requirements.txt 中列出的依赖
 
-      - name: Check
+      - name: Check  # 检查环境变量
         run: |
           if [ -z "$GIST_PAT" ]; then
-              echo "Error: environment 'GIST_PAT' cannot be empty"
+              echo "错误：环境变量 'GIST_PAT' 不能为空"
               exit 1
           fi
 
           if [ -z "$GIST_LINK" ]; then
-              echo "Error: environment 'GIST_LINK' cannot be empty"
+              echo "错误：环境变量 'GIST_LINK' 不能为空"
               exit 1
           fi
 
           LINK_PARTS=$(echo "$GIST_LINK" | awk -F'/' 'NF==2 && $1!="" && $2!=""')
           if [ -z "$LINK_PARTS" ]; then
-              echo "Error: environment 'GIST_LINK' is not valid, should be 'username/gist_id' format"
+              echo "错误：环境变量 'GIST_LINK' 格式不正确，应为 'username/gist_id'"
               exit 1
           fi
 
-      - name: Refresh
-        run: python -u subscribe/collect.py --all --refresh --overwrite --skip
+      - name: Refresh  # 刷新订阅
+        run: python -u subscribe/collect.py --all --refresh --overwrite --skip  # 运行 Python 脚本刷新订阅
 
-      - name: Timestamp
-        run: date
+      - name: Timestamp  # 打印时间戳
+        run: date  # 打印当前日期和时间
