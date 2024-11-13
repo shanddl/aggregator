@@ -31,11 +31,20 @@ jobs:
         # 从上游仓库拉取最新代码
 
       - name: Merge Upstream Changes
+        id: merge
         run: |
           git checkout main
-          git merge upstream/main --allow-unrelated-histories
-        # 合并上游仓库的更改到主分支，并允许合并无关的历史
+          git merge upstream/main --allow-unrelated-histories || echo "Merge conflicts detected"
+        # 合并上游仓库的更改到主分支，并允许合并无关的历史。若有冲突，不中断工作流。
+
+      - name: Handle Merge Conflicts
+        if: failure()
+        run: |
+          echo "Merge conflicts need to be resolved manually."
+          exit 1
+        # 处理合并冲突
 
       - name: Push Changes
+        if: success()
         run: git push origin main
         # 推送合并后的更改到 fork 仓库的主分支
