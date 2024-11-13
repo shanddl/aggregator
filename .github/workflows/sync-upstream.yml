@@ -1,0 +1,25 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每小时运行一次
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: 上游仓库所有者/上游仓库名称
+          ref: main
+
+      - name: Merge upstream changes
+        run: |
+          git remote add upstream https://github.com/上游仓库所有者/上游仓库名称.git
+          git fetch upstream
+          git checkout main
+          git merge upstream/main
+          git push origin main
