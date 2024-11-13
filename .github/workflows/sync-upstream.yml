@@ -18,7 +18,7 @@ jobs:
 
       - name: Merge upstream changes
         run: |
-          git remote add upstream https://github.com/上游仓库所有者/上游仓库名称.git
+          git remote add upstream https://github.com/wzdnzd/aggregator.git
           git fetch upstream
           git checkout main
           git merge upstream/main
