@@ -15,6 +15,7 @@ jobs:
 
     - name: Download file from private repository
       run: |
+        echo "URL: ${{ secrets.PRIVATE_FILE_URL }}" # 输出以供调试
         curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" -o clash.yaml "${{ secrets.PRIVATE_FILE_URL }}"
 
     - name: Convert file to Base64
