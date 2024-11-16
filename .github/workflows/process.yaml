@@ -1,5 +1,4 @@
 name: Process
-
 on:
   schedule:
     - cron: "05 03 * * *"
@@ -28,7 +27,7 @@ env:
   # workflow mode
   WORKFLOW_MODE: ${{ vars.WORKFLOW_MODE }}
 
-  # include special protocols, such as vless hysteria2 and hysteria
+  # include spwcial protocols, such vless hysteria2 and hysteria
   ENABLE_SPECIAL_PROTOCOLS: ${{ vars.ENABLE_SPECIAL_PROTOCOLS }}
 
 jobs:
@@ -50,25 +49,6 @@ jobs:
 
       - name: Install
         run: pip3 install -r requirements.txt
-
-      - name: Download and Convert to Base64
-        run: |
-          echo "Downloading file from ${secrets.PRIVATE_FILE_URL}"
-          curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" -o clash.yaml "${{ secrets.PRIVATE_FILE_URL }}"
-          base64Content=$(cat clash.yaml | base64)
-          echo "BASE64_CONTENT=${base64Content}" >> $GITHUB_ENV
-
-      - name: Create Gist
-        run: |
-          echo "${{ env.BASE64_CONTENT }}" > base64_encoded.txt
-          gistURL=$(curl -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
-            -X POST \
-            -d '{"public":true,"files":{"base64_encoded.txt":{"content":"'"${{ env.BASE64_CONTENT }}"'"}}}' \
-            https://api.github.com/gists | jq -r '.html_url')
-          echo "GIST_URL=${gistURL}" >> $GITHUB_ENV
-
-      - name: Output Gist URL
-        run: echo "Gist URL: ${{ env.GIST_URL }}"
 
       - name: Process
         run: python -u subscribe/process.py --overwrite
