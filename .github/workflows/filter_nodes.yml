@@ -1,0 +1,32 @@
+name: Filter Nodes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-filter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Run filter_nodes script
+        run: |
+          python filter_nodes.py
+
+      - name: Upload filtered nodes
+        uses: actions/upload-artifact@v2
+        with:
+          name: filtered_nodes
+          path: filtered_nodes.json
