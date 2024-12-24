@@ -30,3 +30,18 @@ jobs:
         with:
           name: filtered_nodes
           path: filtered_nodes.json
+
+      - name: Push to Gist
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d @- \
+            https://api.github.com/gists/b18ae65aef55c646a6e857266aec86f4 <<EOF
+            {
+              "files": {
+                "clash.yaml": {
+                  "content": "$(cat filtered_nodes.json)"
+                }
+              }
+            }
+          EOF
