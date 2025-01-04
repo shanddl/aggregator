@@ -27,7 +27,7 @@ env:
   # workflow mode
   WORKFLOW_MODE: ${{ vars.WORKFLOW_MODE }}
 
-  # include spwcial protocols, such vless hysteria2 and hysteria
+  # include special protocols, such vless hysteria2 and hysteria
   ENABLE_SPECIAL_PROTOCOLS: ${{ vars.ENABLE_SPECIAL_PROTOCOLS }}
 
 jobs:
@@ -52,6 +52,9 @@ jobs:
 
       - name: Process
         run: python -u subscribe/process.py --overwrite
+
+      - name: Run filter nodes script
+        run: python scripts/filter_nodes.py
 
       - name: Timestamp
         run: date
