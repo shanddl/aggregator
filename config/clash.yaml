@@ -1,0 +1,17 @@
+proxies:
+  - name: "China Node"
+    server: "china.example.com"
+    port: 443
+    type: "vmess"
+  - name: "US Node"
+    server: "us.example.com"
+    port: 443
+    type: "vmess"
+  - name: "Japan Node"
+    server: "japan.example.com"
+    port: 443
+    type: "vmess"
+  - name: "Russia Node"
+    server: "russia.example.com"
+    port: 443
+    type: "vmess"
