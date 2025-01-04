@@ -1,14 +1,16 @@
-import json
+import yaml
+import requests
 
-# 假设你有一个函数来加载订阅配置
-def load_subscription_config(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return json.load(file)
+# 从 Gist URL 下载订阅配置文件
+def download_subscription_config(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    return yaml.safe_load(response.text)
 
-# 假设你有一个函数来保存订阅配置
+# 保存订阅配置文件
 def save_subscription_config(config, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
-        json.dump(config, file, ensure_ascii=False, indent=4)
+        yaml.dump(config, file, allow_unicode=True, default_flow_style=False)
 
 # 筛选节点，只保留亚太地区的节点，去除其他节点包括俄罗斯的节点
 def filter_nodes(config):
@@ -16,15 +18,15 @@ def filter_nodes(config):
         "China", "Japan", "South Korea", "Taiwan", "Hong Kong", "Singapore",
         "Malaysia", "Thailand", "Vietnam", "Philippines", "Indonesia", "Australia", "New Zealand"
     ]
-    filtered_nodes = [node for node in config['proxies'] if any(country in node['name'] for country in asia_pacific_countries)]
-    config['proxies'] = filtered_nodes
+    filtered_proxies = [proxy for proxy in config['proxies'] if any(country in proxy['name'] for country in asia_pacific_countries)]
+    config['proxies'] = filtered_proxies
     return config
 
 def main():
-    input_file = 'path/to/your/subscription_config.json'
-    output_file = 'path/to/your/filtered_subscription_config.json'
+    gist_url = 'https://gist.githubusercontent.com/shanddl/47ba583ea5b4f5f0e3c5a719d0c01c29/raw/clash.yaml'
+    output_file = 'D:/GitHub/aggregator/config/filtered_subscription_config.yaml'
 
-    config = load_subscription_config(input_file)
+    config = download_subscription_config(gist_url)
     filtered_config = filter_nodes(config)
     save_subscription_config(filtered_config, output_file)
 
