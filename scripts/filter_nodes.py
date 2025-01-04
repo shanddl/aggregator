@@ -1,5 +1,6 @@
 import yaml
 import requests
+import os
 
 # 从 Gist URL 下载订阅配置文件
 def download_subscription_config(url):
@@ -9,6 +10,8 @@ def download_subscription_config(url):
 
 # 保存订阅配置文件
 def save_subscription_config(config, file_path):
+    # 创建目录（如果不存在的话）
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, 'w', encoding='utf-8') as file:
         yaml.dump(config, file, allow_unicode=True, default_flow_style=False)
 
